@@ -1,10 +1,11 @@
 // ==UserScript==
 // @name			Furaffinity Enhanced
 // @namespace		http://codingtoby.com
-// @version		0.4.0.1
+// @version		0.4.0.2
 // @description	Adds new features, fixes bugs, and more!
 // @author		Toby
 // @include		http://www.furaffinity.net/*
+// @include		https://www.furaffinity.net/*
 // @require		http://js.codingtoby.com/tusl.js?updated=00006
 // @require		https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js
 // @require		https://cdnjs.cloudflare.com/ajax/libs/velocity/1.2.3/velocity.min.js
