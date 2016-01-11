@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name			Furaffinity Enhanced
 // @namespace		http://codingtoby.com
-// @version		0.4.0.0
-// @description	Adds and removes from favorites without redirecting.
+// @version		0.4.0.1
+// @description	Adds new features, fixes bugs, and more!
 // @author		Toby
 // @include		http://www.furaffinity.net/*
 // @require		http://js.codingtoby.com/tusl.js?updated=00006
