@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name			Furaffinity Enhanced
 // @namespace		http://codingtoby.com
-// @version		0.4.0.2
+// @version		0.4.0.3
 // @description	Adds new features, fixes bugs, and more!
 // @author		Toby
 // @include		http://www.furaffinity.net/*
@@ -112,6 +112,8 @@
 				$(this).css("width",thisWidth);
 			});
 
+			var winH = $(window).height();
+
 			var mt = $(".maintable")[0];
 			$("#submissionImg").before("<div id='fae_responsiveSubContainer'></div>");
 			var temp = $("#submissionImg").prop("outerHTML");
@@ -119,6 +121,7 @@
 			var mtW = $("#page-submission").width();
 			$("#fae_responsiveSubContainer").append(temp);
 			var actualType = $("#submissionImg").prop("nodeName");
+
 			if(actualType == "IMG")
 			{
 				var imgW = $("#submissionImg").width();
@@ -150,33 +153,87 @@
 			{
 				var objW = $("object").width();
 				var objH = $("object").height();
-				var responsiveObjWidth = mtW - 10;
-				var objWdiff = responsiveObjWidth / objW;
-				var responsiveObjHeight = objWdiff * objH;
-				if(objW >= mtW)
+				var objOriginalW = objW;
+				var objOriginalH = objH;
+				var responsiveObjWidth = "";
+				var responsiveObjHeight = "";
+				var useScale = false;
+
+				var scrollTo = $("object").position().top;
+				scrollTo -= 5;
+				$('html, body').animate({scrollTop: scrollTo}, 0);
+
+				function findScale()
 				{
-					$("object").attr("width",responsiveObjWidth);
-					$("object").attr("height",responsiveObjHeight);
+					objW = $("object").width();
+					objH = $("object").height();
+					winH = $(window).height();
+					mtW = $("#page-submission").width();
 
-					$(w).resize(function()
+					if((objW >= mtW) && (objH < winH))
 					{
-						var mtW = $("#page-submission").width();
-						if(objW >= mtW)
-						{
-							var responsiveObjWidth = mtW - 10;
-							var objWdiff = responsiveObjWidth / objW;
-							var responsiveObjHeight = objWdiff * objH;
+						responsiveObjWidth = mtW - 10;
+						var objWdiff = responsiveObjWidth / objW;
+						responsiveObjHeight = objWdiff * objH;
 
-							$("object").attr("width",responsiveObjWidth);
-							$("object").attr("height",responsiveObjHeight);
+						useScale = objWdiff;
+					}
+					else if((objH >= winH) && (objW < mtW))
+					{
+						var reduceH = objH - winH;
+						responsiveObjHeight = (objH - reduceH) - 10;
+						var objHdiff = responsiveObjHeight / objH;
+						responsiveObjWidth = (objHdiff * objW);
+
+						$("#fae_responsiveSubContainer").css("width",responsiveObjWidth);
+						$("#fae_responsiveSubContainer").css("height",responsiveObjHeight);
+
+						useScale = objHdiff;
+					}
+					else if ((objH >= winH) && (objW >= mtW))
+					{
+						var reduceH = objH - winH;
+						var reduceW = objW - mtW;
+
+						var newObjH = objH - reduceH;
+						var newObjW = objW - reduceW;
+
+						var scaleH = newObjH / objH;
+						var scaleW = newObjW / objW;
+
+						if(scaleH < scaleW)
+						{
+							responsiveObjWidth = (objW * scaleH) - 10;
+							responsiveObjHeight = (objH * scaleH) - 10;
+							useScale = scaleH;
 						}
 						else
 						{
-							$("object").attr("width",objW);
-							$("object").attr("height",objH);
+							responsiveObjWidth = objW * scaleW;
+							responsiveObjHeight = objH * scaleW;
+							useScale = scaleW;
 						}
-					});
+					}
 				}
+
+				function makeAdjustments()
+				{
+					findScale();
+					if(useScale)
+					{
+						$("object").attr("width",responsiveObjWidth);
+						$("object").attr("height",responsiveObjHeight);
+					}
+				}
+				makeAdjustments();
+
+				$(w).resize(function()
+				{
+					$("object").attr("width",objOriginalW);
+					$("object").attr("height",objOriginalH);
+					makeAdjustments();
+				});
+
 			}
 
 		},
